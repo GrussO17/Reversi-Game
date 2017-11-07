@@ -28,14 +28,25 @@ public class GUI_Client2 extends Application  implements Observer  {
      */
     private NetworkClient serverConn;
 
-
+    /**
+     * Reversi Game Board
+     */
     private Board board;
 
+    /**
+     * Grid of buttons the user interacts with
+     */
     private GridPane buttons;
 
+    /**
+     * Output Labels for number of turns left and update message
+     */
     private Label turnNum;
     private Label turn;
 
+    /**
+     * Images used in the buttons
+     */
     private Image PEmpty = new Image(getClass().getResourceAsStream("empty.jpg"));
     private Image P1 = new Image(getClass().getResourceAsStream("othelloP1.jpg"));
     private Image P2 = new Image(getClass().getResourceAsStream("othelloP2.jpg"));
@@ -66,6 +77,11 @@ public class GUI_Client2 extends Application  implements Observer  {
             return params.get( name );
         }
     }
+
+    /**
+     * Initializes the board and connection with the game server
+     * @throws ReversiException game errors
+     */
     public void init() throws ReversiException{
         this.board = new Board();
             int port  = Integer.parseInt(getParamNamed("port"));
@@ -74,11 +90,14 @@ public class GUI_Client2 extends Application  implements Observer  {
         board.addObserver(this);
 
     }
+
+    /**
+     * Begins the game by setting up the GUI based on the board and starting the game
+     * @param mainStage stage to be created on
+     */
     public void start( Stage mainStage ) {
 
         BorderPane border = new BorderPane();
-
-
 
         buttons = new GridPane();
         for(int row = 0; row < board.getNRows(); row ++){
@@ -88,7 +107,7 @@ public class GUI_Client2 extends Application  implements Observer  {
                 b1.setFocusTraversable(false);
                 b1.setOnAction( event -> serverConn.sendMove(((Coordinates)b1.getUserData()).getRow(), ((Coordinates)b1.getUserData()).getCol()));
                 b1.setGraphic(new ImageView(PEmpty));
-                buttons.add(b1, row, col);
+                buttons.add(b1, col, row);
             }
         }
         border.setCenter(buttons);
@@ -109,6 +128,9 @@ public class GUI_Client2 extends Application  implements Observer  {
         board.initializeGame();
     }
 
+    /**
+     * Update method that gets wrapped inside update by run later method
+     */
     public void newBoard(){
         if(!board.getStatus().equals(Board.Status.NOT_OVER)){
             if(board.getStatus().equals(Board.Status.I_WON)){
@@ -151,6 +173,12 @@ public class GUI_Client2 extends Application  implements Observer  {
 
         }
     }
+
+    /**
+     * updates the UI when the model has changed
+     * @param obs
+     * @param obj
+     */
     public void update(Observable obs, Object obj){
         javafx.application.Platform.runLater(() -> newBoard());
     }
