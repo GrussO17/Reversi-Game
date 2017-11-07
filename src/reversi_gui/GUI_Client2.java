@@ -110,9 +110,18 @@ public class GUI_Client2 extends Application  implements Observer  {
     }
 
     public void newBoard(){
-        if(board.getStatus())
+        if(!board.getStatus().equals(Board.Status.NOT_OVER)){
+            if(board.getStatus().equals(Board.Status.I_WON)){
+                turn.setText("YOU WON!");
+            }
+            else if(board.getStatus().equals(Board.Status.I_LOST)){
+                turn.setText("YOU LOST!");
+            }
+            else if(board.getStatus().equals(Board.Status.TIE)){
+                turn.setText("YOU TIED!");
+            }
+        }
 
-        System.out.println("ITS GONNA FUCKIN WORK");
         for(Node stuff: buttons.getChildren()){
             Coordinates pair = (Coordinates)stuff.getUserData();
             if(board.getContents(pair.getRow(), pair.getCol()).equals(Board.Move.PLAYER_ONE)) {
@@ -131,11 +140,13 @@ public class GUI_Client2 extends Application  implements Observer  {
                 stuff.setDisable(true);
             }
             turnNum.setText("Moves Left " + board.getMovesLeft());
-            if(board.isMyTurn())
-                turn.setText("Your Turn");
-            else
-                turn.setText("Waiting for other player...");
 
+            if(board.getStatus().equals(Board.Status.NOT_OVER)){
+                if (board.isMyTurn())
+                    turn.setText("Your Turn");
+                else
+                    turn.setText("Waiting for other player...");
+            }
 
 
         }
